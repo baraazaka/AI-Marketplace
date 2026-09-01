@@ -110,3 +110,30 @@ export async function updateProduct(req, res) {
 
     res.json(data);
 }
+export async function deleteProduct(req, res) {
+
+    const { id } = req.params;
+
+    const { data, error } = await supabase
+        .from("products")
+        .delete()
+        .eq("id", id)
+        .select();
+
+    if (error) {
+        return res.status(500).json({
+            error: error.message
+        });
+    }
+
+    if (data.length === 0) {
+        return res.status(404).json({
+            error: "Product not found"
+        });
+    }
+
+    res.json({
+        message: "Product deleted successfully",
+        product: data[0]
+    });
+}
