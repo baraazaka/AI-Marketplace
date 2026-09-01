@@ -72,3 +72,41 @@ export async function createProduct(req, res) {
 
     res.status(201).json(data);
 }
+
+export async function updateProduct(req, res) {
+
+    const { id } = req.params;
+
+    const {
+        name,
+        description,
+        price,
+        stock,
+        brand,
+        image_url,
+        category_id
+    } = req.body;
+
+    const { data, error } = await supabase
+        .from("products")
+        .update({
+            name,
+            description,
+            price,
+            stock,
+            brand,
+            image_url,
+            category_id
+        })
+        .eq("id", id)
+        .select()
+        .single();
+
+    if (error) {
+        return res.status(500).json({
+            error: error.message
+        });
+    }
+
+    res.json(data);
+}
