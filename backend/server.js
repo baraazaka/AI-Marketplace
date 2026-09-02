@@ -5,6 +5,7 @@ import categoryRoutes from "./routes/categories.js";
 import cartRoutes from "./routes/carts.js";
 import cartItemRoutes from "./routes/cartItems.js";
 import wishlistRoutes from "./routes/wishlists.js";
+import wishlistItemRoutes from "./routes/wishlistItems.js";
 const app = express();
 
 app.use(cors());
@@ -21,6 +22,7 @@ app.use("/api/categories", categoryRoutes);
 app.use("/api/carts", cartRoutes);
 app.use("/api/cart-items", cartItemRoutes);
 app.use("/api/wishlists", wishlistRoutes);
+app.use("/api/wishlist-items", wishlistItemRoutes);
 const PORT = 5000;
 
 app.listen(PORT, () => {
