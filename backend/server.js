@@ -10,6 +10,7 @@ import orderRoutes from "./routes/orders.js";
 import orderItemRoutes from "./routes/orderItems.js";
 import reviewRoutes from "./routes/reviews.js";
 import profileRoutes from "./routes/profiles.js";
+import authRoutes from "./routes/auth.js";
 const app = express();
 
 app.use(cors());
@@ -31,6 +32,7 @@ app.use("/api/orders", orderRoutes);
 app.use("/api/order-items", orderItemRoutes);
 app.use("/api/reviews", reviewRoutes);
 app.use("/api/profiles", profileRoutes);
+app.use("/api/auth", authRoutes);
 const PORT = 5000;
 
 app.listen(PORT, () => {
