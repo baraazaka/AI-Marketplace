@@ -2,6 +2,7 @@ import express from "express";
 import cors from "cors";
 import productRoutes from "./routes/products.js";
 import categoryRoutes from "./routes/categories.js";
+import cartRoutes from "./routes/carts.js";
 const app = express();
 
 app.use(cors());
@@ -15,6 +16,7 @@ app.get("/", (req, res) => {
 
 app.use("/api/products", productRoutes);
 app.use("/api/categories", categoryRoutes);
+app.use("/api/carts", cartRoutes);
 const PORT = 5000;
 
 app.listen(PORT, () => {
