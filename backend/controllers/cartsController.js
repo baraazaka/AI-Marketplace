@@ -30,3 +30,24 @@ export async function getCart(req, res) {
 
     res.json(data);
 }
+export async function createCart(req, res) {
+    const { user_id } = req.body;
+
+    const { data, error } = await supabase
+        .from("carts")
+        .insert([
+            {
+                user_id
+            }
+        ])
+        .select()
+        .single();
+
+    if (error) {
+        return res.status(500).json({
+            error: error.message
+        });
+    }
+
+    res.status(201).json(data);
+}
