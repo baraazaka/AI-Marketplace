@@ -82,3 +82,29 @@ export async function updateCategory(req, res) {
 
     res.json(data[0]);
 }
+export async function deleteCategory(req, res) {
+    const { id } = req.params;
+
+    const { data, error } = await supabase
+        .from("categories")
+        .delete()
+        .eq("id", id)
+        .select();
+
+    if (error) {
+        return res.status(500).json({
+            error: error.message
+        });
+    }
+
+    if (data.length === 0) {
+        return res.status(404).json({
+            error: "Category not found"
+        });
+    }
+
+    res.json({
+        message: "Category deleted successfully",
+        category: data[0]
+    });
+}
