@@ -78,3 +78,29 @@ export async function updateCart(req, res) {
 
     res.json(data[0]);
 }
+export async function deleteCart(req, res) {
+    const { id } = req.params;
+
+    const { data, error } = await supabase
+        .from("carts")
+        .delete()
+        .eq("id", id)
+        .select();
+
+    if (error) {
+        return res.status(500).json({
+            error: error.message
+        });
+    }
+
+    if (data.length === 0) {
+        return res.status(404).json({
+            error: "Cart not found"
+        });
+    }
+
+    res.json({
+        message: "Cart deleted successfully",
+        cart: data[0]
+    });
+}
