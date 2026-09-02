@@ -51,3 +51,30 @@ export async function createCart(req, res) {
 
     res.status(201).json(data);
 }
+
+export async function updateCart(req, res) {
+    const { id } = req.params;
+    const { user_id } = req.body;
+
+    const { data, error } = await supabase
+        .from("carts")
+        .update({
+            user_id
+        })
+        .eq("id", id)
+        .select();
+
+    if (error) {
+        return res.status(500).json({
+            error: error.message
+        });
+    }
+
+    if (data.length === 0) {
+        return res.status(404).json({
+            error: "Cart not found"
+        });
+    }
+
+    res.json(data[0]);
+}
