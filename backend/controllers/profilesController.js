@@ -1,6 +1,10 @@
+
 import supabase from "../config/supabase.js";
 
+
+// Get all profiles
 export async function getProfiles(req, res) {
+
     const { data, error } = await supabase
         .from("profiles")
         .select("*");
@@ -13,7 +17,11 @@ export async function getProfiles(req, res) {
 
     res.json(data);
 }
+
+
+// Get one profile
 export async function getProfile(req, res) {
+
     const { id } = req.params;
 
     const { data, error } = await supabase
@@ -30,46 +38,18 @@ export async function getProfile(req, res) {
 
     res.json(data);
 }
-export async function updateProfile(req, res) {
-    const { id } = req.params;
 
-    const {
-        full_name,
-        avatar_url,
-        role
-    } = req.body;
 
-    const { data, error } = await supabase
-        .from("profiles")
-        .update({
-            full_name,
-            avatar_url,
-            role
-        })
-        .eq("id", id)
-        .select();
-
-    if (error) {
-        return res.status(500).json({
-            error: error.message
-        });
-    }
-
-    if (data.length === 0) {
-        return res.status(404).json({
-            error: "Profile not found"
-        });
-    }
-
-    res.json(data[0]);
-}
+// Create profile
 export async function createProfile(req, res) {
+
     const {
-        id,
         full_name,
-        avatar_url,
-        role
+        avatar_url
     } = req.body;
+
+    // The profile ID must come from the authenticated user
+    const id = req.user.id;
 
     const { data, error } = await supabase
         .from("profiles")
@@ -77,8 +57,7 @@ export async function createProfile(req, res) {
             {
                 id,
                 full_name,
-                avatar_url,
-                role
+                avatar_url
             }
         ])
         .select()
@@ -90,11 +69,49 @@ export async function createProfile(req, res) {
         });
     }
 
-
     res.status(201).json(data);
 }
 
+
+// Update profile
+export async function updateProfile(req, res) {
+
+    const { id } = req.params;
+
+    const {
+        full_name,
+        avatar_url
+    } = req.body;
+
+    const { data, error } = await supabase
+        .from("profiles")
+        .update({
+            full_name,
+            avatar_url
+        })
+        .eq("id", id)
+        .select()
+        .single();
+
+    if (error) {
+        return res.status(500).json({
+            error: error.message
+        });
+    }
+
+    if (!data) {
+        return res.status(404).json({
+            error: "Profile not found"
+        });
+    }
+
+    res.json(data);
+}
+
+
+// Delete profile
 export async function deleteProfile(req, res) {
+
     const { id } = req.params;
 
     const { data, error } = await supabase

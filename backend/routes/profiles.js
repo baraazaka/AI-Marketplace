@@ -1,4 +1,9 @@
+
 import express from "express";
+
+import { authMiddleware } from "../middleware/authMiddleware.js";
+import { roleMiddleware } from "../middleware/roleMiddleware.js";
+import { profileOwnershipMiddleware } from "../middleware/profileOwnershipMiddleware.js";
 
 import {
     getProfiles,
@@ -10,10 +15,52 @@ import {
 
 const router = express.Router();
 
-router.get("/", getProfiles);
-router.get("/:id", getProfile);
-router.post("/", createProfile);
-router.put("/:id", updateProfile);
-router.delete("/:id", deleteProfile);
+// Get all profiles
+// Admin only
+router.get(
+    "/",
+    authMiddleware,
+    roleMiddleware("admin"),
+    getProfiles
+);
+
+// Get one profile
+// Owner or Admin
+router.get(
+    "/:id",
+    authMiddleware,
+    roleMiddleware("user", "seller", "admin"),
+    profileOwnershipMiddleware,
+    getProfile
+);
+
+// Create profile
+// Authenticated users
+router.post(
+    "/",
+    authMiddleware,
+    createProfile
+);
+
+// Update profile
+// Owner or Admin
+router.put(
+    "/:id",
+    authMiddleware,
+    roleMiddleware("user", "seller", "admin"),
+    profileOwnershipMiddleware,
+    updateProfile
+);
+
+// Delete profile
+// Owner or Admin
+router.delete(
+    "/:id",
+    authMiddleware,
+    roleMiddleware("user", "seller", "admin"),
+    profileOwnershipMiddleware,
+    deleteProfile
+);
 
 export default router;
+

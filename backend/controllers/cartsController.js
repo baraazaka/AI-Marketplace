@@ -1,6 +1,10 @@
+
 import supabase from "../config/supabase.js";
 
+
+// Get all carts
 export async function getCarts(req, res) {
+
     const { data, error } = await supabase
         .from("carts")
         .select("*");
@@ -13,7 +17,11 @@ export async function getCarts(req, res) {
 
     res.json(data);
 }
+
+
+// Get one cart
 export async function getCart(req, res) {
+
     const { id } = req.params;
 
     const { data, error } = await supabase
@@ -30,8 +38,13 @@ export async function getCart(req, res) {
 
     res.json(data);
 }
+
+
+// Create cart
 export async function createCart(req, res) {
-    const { user_id } = req.body;
+
+    // Get the user ID from the authenticated user
+    const user_id = req.user.id;
 
     const { data, error } = await supabase
         .from("carts")
@@ -52,15 +65,18 @@ export async function createCart(req, res) {
     res.status(201).json(data);
 }
 
+
+// Update cart
 export async function updateCart(req, res) {
+
     const { id } = req.params;
-    const { user_id } = req.body;
+
+    // No user_id here.
+    // The owner of the cart cannot be changed.
 
     const { data, error } = await supabase
         .from("carts")
-        .update({
-            user_id
-        })
+        .update({})
         .eq("id", id)
         .select();
 
@@ -78,7 +94,11 @@ export async function updateCart(req, res) {
 
     res.json(data[0]);
 }
+
+
+// Delete cart
 export async function deleteCart(req, res) {
+
     const { id } = req.params;
 
     const { data, error } = await supabase
@@ -104,3 +124,4 @@ export async function deleteCart(req, res) {
         cart: data[0]
     });
 }
+

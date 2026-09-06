@@ -1,4 +1,9 @@
+
 import express from "express";
+
+import { authMiddleware } from "../middleware/authMiddleware.js";
+import { roleMiddleware } from "../middleware/roleMiddleware.js";
+
 import {
     getCategories,
     getCategory,
@@ -6,11 +11,35 @@ import {
     updateCategory,
     deleteCategory
 } from "../controllers/categoriesController.js";
+
 const router = express.Router();
 
+// Public routes
 router.get("/", getCategories);
+
 router.get("/:id", getCategory);
-router.post("/", createCategory);
-router.put("/:id", updateCategory);
-router.delete("/:id", deleteCategory);
+
+// Admin only
+router.post(
+    "/",
+    authMiddleware,
+    roleMiddleware("admin"),
+    createCategory
+);
+
+router.put(
+    "/:id",
+    authMiddleware,
+    roleMiddleware("admin"),
+    updateCategory
+);
+
+router.delete(
+    "/:id",
+    authMiddleware,
+    roleMiddleware("admin"),
+    deleteCategory
+);
+
 export default router;
+

@@ -1,18 +1,60 @@
+
 import express from "express";
-import { 
+
+import { authMiddleware } from "../middleware/authMiddleware.js";
+import { roleMiddleware } from "../middleware/roleMiddleware.js";
+import { wishlistOwnershipMiddleware } from "../middleware/wishlistOwnershipMiddleware.js";
+
+import {
     getWishlists,
     getWishlist,
     createWishlist,
-    updateWishlist,
     deleteWishlist
- } from "../controllers/wishlistsController.js";
+} from "../controllers/wishlistsController.js";
 
 const router = express.Router();
 
-router.get("/", getWishlists);
-router.get("/:id", getWishlist);
-router.post("/", createWishlist);
-router.put("/:id", updateWishlist);
-router.delete("/:id", deleteWishlist);
+
+// Get all wishlists
+// Admin only
+router.get(
+    "/",
+    authMiddleware,
+    roleMiddleware("admin"),
+    getWishlists
+);
+
+
+// Get one wishlist
+// Owner or Admin
+router.get(
+    "/:id",
+    authMiddleware,
+    roleMiddleware("user", "seller", "admin"),
+    wishlistOwnershipMiddleware,
+    getWishlist
+);
+
+
+// Create wishlist
+// Authenticated users
+router.post(
+    "/",
+    authMiddleware,
+    createWishlist
+);
+
+
+// Delete wishlist
+// Owner or Admin
+router.delete(
+    "/:id",
+    authMiddleware,
+    roleMiddleware("user", "seller", "admin"),
+    wishlistOwnershipMiddleware,
+    deleteWishlist
+);
+
 
 export default router;
+

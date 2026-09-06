@@ -1,4 +1,10 @@
+
 import express from "express";
+
+import { authMiddleware } from "../middleware/authMiddleware.js";
+import { roleMiddleware } from "../middleware/roleMiddleware.js";
+import { cartItemOwnershipMiddleware } from "../middleware/cartItemOwnershipMiddleware.js";
+
 import {
     getCartItems,
     getCartItem,
@@ -9,10 +15,59 @@ import {
 
 const router = express.Router();
 
-router.get("/", getCartItems);
-router.get("/:id", getCartItem);
-router.post("/", createCartItem);
-router.put("/:id", updateCartItem);
-router.delete("/:id", deleteCartItem);
+
+// Get all cart items
+// Admin only
+router.get(
+    "/",
+    authMiddleware,
+    roleMiddleware("admin"),
+    getCartItems
+);
+
+
+// Get one cart item
+// Owner or Admin
+router.get(
+    "/:id",
+    authMiddleware,
+    roleMiddleware("user", "seller", "admin"),
+    cartItemOwnershipMiddleware,
+    getCartItem
+);
+
+
+// Create cart item
+// Authenticated users
+router.post(
+    "/",
+    authMiddleware,
+    cartItemOwnershipMiddleware,
+    createCartItem
+);
+
+
+// Update cart item
+// Owner or Admin
+router.put(
+    "/:id",
+    authMiddleware,
+    roleMiddleware("user", "seller", "admin"),
+    cartItemOwnershipMiddleware,
+    updateCartItem
+);
+
+
+// Delete cart item
+// Owner or Admin
+router.delete(
+    "/:id",
+    authMiddleware,
+    roleMiddleware("user", "seller", "admin"),
+    cartItemOwnershipMiddleware,
+    deleteCartItem
+);
+
 
 export default router;
+

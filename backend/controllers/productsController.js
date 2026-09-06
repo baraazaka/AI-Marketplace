@@ -44,9 +44,8 @@ export async function createProduct(req, res) {
         brand,
         image_url,
         category_id,
-        seller_id
     } = req.body;
-
+    const seller_id = req.user.id;
     const { data, error } = await supabase
         .from("products")
         .insert([
