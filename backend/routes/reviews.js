@@ -10,7 +10,8 @@ import {
     getReview,
     createReview,
     updateReview,
-    deleteReview
+    deleteReview,
+    getProductReviews
 } from "../controllers/reviewsController.js";
 
 const router = express.Router();
@@ -21,6 +22,11 @@ const router = express.Router();
 router.get(
     "/",
     getReviews
+);
+
+router.get(
+    "/product/:product_id",
+    getProductReviews
 );
 
 

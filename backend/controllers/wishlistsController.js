@@ -1,4 +1,3 @@
-
 import supabase from "../config/supabase.js";
 
 
@@ -18,6 +17,30 @@ export async function getWishlists(req, res) {
     res.json(data);
 }
 
+
+// Get my wishlist
+export async function getMyWishlist(req, res) {
+
+    const user_id = req.user.id;
+
+    console.log("Logged in user:", user_id);
+
+    const { data, error } = await supabase
+        .from("wishlists")
+        .select("*")
+        .eq("user_id", user_id)
+        .single();
+
+    if (error || !data) {
+        console.log("Wishlist error:", error);
+
+        return res.status(404).json({
+            error: "Wishlist not found"
+        });
+    }
+
+    res.json(data);
+}
 
 // Get one wishlist
 export async function getWishlist(req, res) {
@@ -40,10 +63,10 @@ export async function getWishlist(req, res) {
 }
 
 
+
 // Create wishlist
 export async function createWishlist(req, res) {
 
-    // User ID comes from the authenticated user
     const user_id = req.user.id;
 
     const { data, error } = await supabase

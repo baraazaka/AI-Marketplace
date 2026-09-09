@@ -19,6 +19,43 @@ export async function getCarts(req, res) {
 }
 
 
+// Get current user's cart
+
+export async function getMyCart(req, res) {
+    try {
+        const user_id = req.user.id;
+
+        console.log("GET MY CART");
+        console.log("User ID:", user_id);
+
+        const { data, error } = await supabase
+            .from("carts")
+            .select("*")
+            .eq("user_id", user_id)
+            .single();
+
+        console.log("Cart data:", data);
+        console.log("Cart error:", error);
+
+        if (error) {
+            return res.status(500).json({
+                error: error.message
+            });
+        }
+
+        res.json(data);
+
+    } catch (error) {
+        console.error("Get my cart error:", error);
+
+        return res.status(500).json({
+            error: "Server error"
+        });
+    }
+}
+
+
+
 // Get one cart
 export async function getCart(req, res) {
 
@@ -43,7 +80,6 @@ export async function getCart(req, res) {
 // Create cart
 export async function createCart(req, res) {
 
-    // Get the user ID from the authenticated user
     const user_id = req.user.id;
 
     const { data, error } = await supabase
@@ -70,9 +106,6 @@ export async function createCart(req, res) {
 export async function updateCart(req, res) {
 
     const { id } = req.params;
-
-    // No user_id here.
-    // The owner of the cart cannot be changed.
 
     const { data, error } = await supabase
         .from("carts")

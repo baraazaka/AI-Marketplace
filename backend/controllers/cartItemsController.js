@@ -40,32 +40,59 @@ export async function getCartItem(req, res) {
 }
 
 
-// Create cart item
+
 export async function createCartItem(req, res) {
+    const { cart_id, product_id, quantity } = req.body;
 
-    const {
-        cart_id,
-        product_id,
-        quantity
-    } = req.body;
-
-
-    // Validate required fields
     if (!cart_id || !product_id || !quantity) {
         return res.status(400).json({
             error: "cart_id, product_id and quantity are required"
         });
     }
 
-
-    // Quantity must be a positive number
     if (quantity <= 0) {
         return res.status(400).json({
             error: "Quantity must be greater than 0"
         });
     }
 
+    // Check if product already exists in this cart
+    const { data: existingItem, error: findError } = await supabase
+        .from("cart_items")
+        .select("*")
+        .eq("cart_id", cart_id)
+        .eq("product_id", product_id)
+        .maybeSingle();
 
+    if (findError) {
+        return res.status(500).json({
+            error: findError.message
+        });
+    }
+
+    // Product already exists -> increase quantity
+    if (existingItem) {
+        const newQuantity = existingItem.quantity + quantity;
+
+        const { data, error } = await supabase
+            .from("cart_items")
+            .update({
+                quantity: newQuantity
+            })
+            .eq("id", existingItem.id)
+            .select()
+            .single();
+
+        if (error) {
+            return res.status(500).json({
+                error: error.message
+            });
+        }
+
+        return res.json(data);
+    }
+
+    // Product doesn't exist -> create new cart item
     const { data, error } = await supabase
         .from("cart_items")
         .insert([
@@ -78,16 +105,15 @@ export async function createCartItem(req, res) {
         .select()
         .single();
 
-
     if (error) {
         return res.status(500).json({
             error: error.message
         });
     }
 
-
     res.status(201).json(data);
 }
+
 
 
 // Update cart item
@@ -171,4 +197,73 @@ export async function deleteCartItem(req, res) {
         cartItem: data[0]
     });
 }
+
+// Get current user's cart items
+export async function getMyCartItems(req, res) {
+
+    try {
+
+        const user_id = req.user.id;
+
+
+        // Get user's cart
+        const { data: cart, error: cartError } = await supabase
+            .from("carts")
+            .select("id")
+            .eq("user_id", user_id)
+            .single();
+
+
+        if (cartError || !cart) {
+
+            return res.status(404).json({
+                error: "Cart not found"
+            });
+
+        }
+
+
+        // Get cart items with product information
+        const { data, error } = await supabase
+            .from("cart_items")
+            .select(`
+                id,
+                cart_id,
+                product_id,
+                quantity,
+                created_at,
+                products (
+                    id,
+                    name,
+                    price,
+                    description,
+                    image_url
+                )
+            `)
+            .eq("cart_id", cart.id);
+
+
+        if (error) {
+
+            return res.status(500).json({
+                error: error.message
+            });
+
+        }
+
+
+        res.json(data);
+
+    } catch (error) {
+
+        console.error("Get my cart items error:", error);
+
+        return res.status(500).json({
+            error: "Server error"
+        });
+
+    }
+}
+
+
 

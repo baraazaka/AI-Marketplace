@@ -7,6 +7,7 @@ import { wishlistItemOwnershipMiddleware } from "../middleware/wishlistItemOwner
 
 import {
     getWishlistItems,
+    getMyWishlistItems,
     getWishlistItem,
     createWishlistItem,
     deleteWishlistItem
@@ -17,6 +18,7 @@ const router = express.Router();
 
 // Get all wishlist items
 // Admin only
+
 router.get(
     "/",
     authMiddleware,
@@ -25,8 +27,18 @@ router.get(
 );
 
 
+// Get current user's wishlist items
+
+router.get(
+    "/me",
+    authMiddleware,
+    roleMiddleware("user", "seller", "admin"),
+    getMyWishlistItems
+);
+
 // Get one wishlist item
 // Owner or Admin
+
 router.get(
     "/:id",
     authMiddleware,
@@ -38,6 +50,7 @@ router.get(
 
 // Create wishlist item
 // Authenticated users
+
 router.post(
     "/",
     authMiddleware,
@@ -48,6 +61,7 @@ router.post(
 
 // Delete wishlist item
 // Owner or Admin
+
 router.delete(
     "/:id",
     authMiddleware,

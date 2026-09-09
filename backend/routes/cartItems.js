@@ -2,11 +2,14 @@
 import express from "express";
 
 import { authMiddleware } from "../middleware/authMiddleware.js";
+
 import { roleMiddleware } from "../middleware/roleMiddleware.js";
+
 import { cartItemOwnershipMiddleware } from "../middleware/cartItemOwnershipMiddleware.js";
 
 import {
     getCartItems,
+    getMyCartItems,
     getCartItem,
     createCartItem,
     updateCartItem,
@@ -16,8 +19,11 @@ import {
 const router = express.Router();
 
 
+// ========================================
 // Get all cart items
 // Admin only
+// ========================================
+
 router.get(
     "/",
     authMiddleware,
@@ -26,8 +32,24 @@ router.get(
 );
 
 
+// ========================================
+// Get current user's cart items
+// Authenticated users
+// ========================================
+
+router.get(
+    "/me",
+    authMiddleware,
+    roleMiddleware("user", "seller", "admin"),
+    getMyCartItems
+);
+
+
+// ========================================
 // Get one cart item
 // Owner or Admin
+// ========================================
+
 router.get(
     "/:id",
     authMiddleware,
@@ -37,8 +59,11 @@ router.get(
 );
 
 
+// ========================================
 // Create cart item
 // Authenticated users
+// ========================================
+
 router.post(
     "/",
     authMiddleware,
@@ -47,8 +72,11 @@ router.post(
 );
 
 
+// ========================================
 // Update cart item
 // Owner or Admin
+// ========================================
+
 router.put(
     "/:id",
     authMiddleware,
@@ -58,8 +86,11 @@ router.put(
 );
 
 
+// ========================================
 // Delete cart item
 // Owner or Admin
+// ========================================
+
 router.delete(
     "/:id",
     authMiddleware,

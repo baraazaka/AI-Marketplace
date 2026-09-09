@@ -128,3 +128,56 @@ export async function deleteWishlistItem(req, res) {
     });
 }
 
+
+export async function getMyWishlistItems(req, res) {
+    try {
+        const user_id = req.user.id;
+
+        // Get user's wishlist
+        const { data: wishlist, error: wishlistError } = await supabase
+            .from("wishlists")
+            .select("id")
+            .eq("user_id", user_id)
+            .single();
+
+        if (wishlistError || !wishlist) {
+            return res.status(404).json({
+                error: "Wishlist not found"
+            });
+        }
+
+        // Get wishlist items
+        const { data, error } = await supabase
+            .from("wishlist_items")
+            .select(`
+                id,
+                wishlist_id,
+                product_id,
+                created_at,
+                products (
+                    id,
+                    name,
+                    price,
+                    description,
+                    image_url
+                )
+            `)
+            .eq("wishlist_id", wishlist.id);
+
+        if (error) {
+            return res.status(500).json({
+                error: error.message
+            });
+        }
+
+        res.json(data);
+
+    } catch (error) {
+        console.error("Get my wishlist items error:", error);
+
+        return res.status(500).json({
+            error: "Server error"
+        });
+    }
+}
+

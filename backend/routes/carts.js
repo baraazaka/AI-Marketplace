@@ -7,6 +7,7 @@ import { cartOwnershipMiddleware } from "../middleware/cartOwnershipMiddleware.j
 
 import {
     getCarts,
+    getMyCart,
     getCart,
     createCart,
     updateCart,
@@ -16,8 +17,11 @@ import {
 const router = express.Router();
 
 
+// ========================================
 // Get all carts
 // Admin only
+// ========================================
+
 router.get(
     "/",
     authMiddleware,
@@ -26,8 +30,24 @@ router.get(
 );
 
 
+// ========================================
+// Get current user's cart
+// Authenticated users
+// ========================================
+
+router.get(
+    "/me",
+    authMiddleware,
+    roleMiddleware("user", "seller", "admin"),
+    getMyCart
+);
+
+
+// ========================================
 // Get one cart
 // Owner or Admin
+// ========================================
+
 router.get(
     "/:id",
     authMiddleware,
@@ -37,8 +57,11 @@ router.get(
 );
 
 
+// ========================================
 // Create cart
 // Authenticated users
+// ========================================
+
 router.post(
     "/",
     authMiddleware,
@@ -46,8 +69,11 @@ router.post(
 );
 
 
+// ========================================
 // Update cart
 // Owner or Admin
+// ========================================
+
 router.put(
     "/:id",
     authMiddleware,
@@ -57,8 +83,11 @@ router.put(
 );
 
 
+// ========================================
 // Delete cart
 // Owner or Admin
+// ========================================
+
 router.delete(
     "/:id",
     authMiddleware,
@@ -69,4 +98,3 @@ router.delete(
 
 
 export default router;
-

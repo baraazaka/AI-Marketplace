@@ -7,6 +7,7 @@ import { orderOwnershipMiddleware } from "../middleware/orderOwnershipMiddleware
 
 import {
     getOrders,
+    getMyOrders,
     getOrder,
     createOrder,
     updateOrder,
@@ -23,6 +24,16 @@ router.get(
     authMiddleware,
     roleMiddleware("admin"),
     getOrders
+);
+
+
+// Get my orders
+// Authenticated users
+router.get(
+    "/me",
+    authMiddleware,
+    roleMiddleware("user", "seller", "admin"),
+    getMyOrders
 );
 
 

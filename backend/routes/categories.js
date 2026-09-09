@@ -7,6 +7,7 @@ import { roleMiddleware } from "../middleware/roleMiddleware.js";
 import {
     getCategories,
     getCategory,
+    getCategoryProducts,
     createCategory,
     updateCategory,
     deleteCategory
@@ -16,6 +17,8 @@ const router = express.Router();
 
 // Public routes
 router.get("/", getCategories);
+
+router.get("/:id/products", getCategoryProducts);
 
 router.get("/:id", getCategory);
 

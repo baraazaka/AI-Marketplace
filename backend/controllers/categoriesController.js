@@ -15,6 +15,50 @@ export async function getCategories(req, res) {
     res.json(data);
 }
 
+export async function getCategoryProducts(req, res) {
+    try {
+        const { id } = req.params;
+
+        // Check if category exists
+        const { data: category, error: categoryError } = await supabase
+            .from("categories")
+            .select("id, name")
+            .eq("id", id)
+            .single();
+
+        if (categoryError || !category) {
+            return res.status(404).json({
+                error: "Category not found"
+            });
+        }
+
+        // Get products belonging to this category
+        const { data: products, error: productsError } = await supabase
+            .from("products")
+            .select("*")
+            .eq("category_id", id);
+
+        if (productsError) {
+            return res.status(500).json({
+                error: productsError.message
+            });
+        }
+
+        res.json({
+            category,
+            products
+        });
+
+    } catch (error) {
+        console.error("Get category products error:", error);
+
+        return res.status(500).json({
+            error: "Server error"
+        });
+    }
+}
+
+
 export async function getCategory(req, res) {
 
     const { id } = req.params;

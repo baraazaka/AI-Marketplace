@@ -1,4 +1,3 @@
-
 import express from "express";
 
 import { authMiddleware } from "../middleware/authMiddleware.js";
@@ -7,6 +6,7 @@ import { wishlistOwnershipMiddleware } from "../middleware/wishlistOwnershipMidd
 
 import {
     getWishlists,
+    getMyWishlist,
     getWishlist,
     createWishlist,
     deleteWishlist
@@ -22,6 +22,15 @@ router.get(
     authMiddleware,
     roleMiddleware("admin"),
     getWishlists
+);
+
+
+// Get current user's wishlist
+router.get(
+    "/me",
+    authMiddleware,
+    roleMiddleware("user", "seller", "admin"),
+    getMyWishlist
 );
 
 
@@ -54,7 +63,6 @@ router.delete(
     wishlistOwnershipMiddleware,
     deleteWishlist
 );
-
 
 export default router;
 

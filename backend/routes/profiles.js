@@ -10,7 +10,8 @@ import {
     getProfile,
     createProfile,
     updateProfile,
-    deleteProfile
+    deleteProfile,
+    getMyProfile
 } from "../controllers/profilesController.js";
 
 const router = express.Router();
@@ -23,7 +24,11 @@ router.get(
     roleMiddleware("admin"),
     getProfiles
 );
-
+router.get(
+    "/me",
+    authMiddleware,
+    getMyProfile
+);
 // Get one profile
 // Owner or Admin
 router.get(

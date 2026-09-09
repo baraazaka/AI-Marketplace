@@ -19,6 +19,33 @@ export async function getProfiles(req, res) {
 }
 
 
+export async function getMyProfile(req, res) {
+    try {
+        const user_id = req.user.id;
+
+        const { data, error } = await supabase
+            .from("profiles")
+            .select("*")
+            .eq("id", user_id)
+            .single();
+
+        if (error || !data) {
+            return res.status(404).json({
+                error: "Profile not found"
+            });
+        }
+
+        res.json(data);
+    } catch (error) {
+        console.error("Get my profile error:", error);
+
+        return res.status(500).json({
+            error: "Server error"
+        });
+    }
+}
+
+
 // Get one profile
 export async function getProfile(req, res) {
 
@@ -73,40 +100,62 @@ export async function createProfile(req, res) {
 }
 
 
-// Update profile
+
 export async function updateProfile(req, res) {
+    try {
+        const { id } = req.params;
 
-    const { id } = req.params;
-
-    const {
-        full_name,
-        avatar_url
-    } = req.body;
-
-    const { data, error } = await supabase
-        .from("profiles")
-        .update({
+        const {
             full_name,
             avatar_url
-        })
-        .eq("id", id)
-        .select()
-        .single();
+        } = req.body;
 
-    if (error) {
+        if (full_name === undefined && avatar_url === undefined) {
+            return res.status(400).json({
+                error: "At least one profile field is required"
+            });
+        }
+
+        const updates = {};
+
+        if (full_name !== undefined) {
+            updates.full_name = full_name;
+        }
+
+        if (avatar_url !== undefined) {
+            updates.avatar_url = avatar_url;
+        }
+
+        const { data, error } = await supabase
+            .from("profiles")
+            .update(updates)
+            .eq("id", id)
+            .select()
+            .single();
+
+        if (error) {
+            return res.status(500).json({
+                error: error.message
+            });
+        }
+
+        if (!data) {
+            return res.status(404).json({
+                error: "Profile not found"
+            });
+        }
+
+        res.json(data);
+
+    } catch (error) {
+        console.error("Update profile error:", error);
+
         return res.status(500).json({
-            error: error.message
+            error: "Server error"
         });
     }
-
-    if (!data) {
-        return res.status(404).json({
-            error: "Profile not found"
-        });
-    }
-
-    res.json(data);
 }
+
 
 
 // Delete profile
