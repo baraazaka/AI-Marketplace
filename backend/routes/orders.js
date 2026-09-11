@@ -11,7 +11,17 @@ import {
     getOrder,
     createOrder,
     updateOrder,
-    deleteOrder
+    deleteOrder,
+    getSellerOrders,
+    getSellerOrder,
+    updateSellerOrderStatus,
+    getSellerDashboard,
+    getSellerAnalytics,
+    getAdminDashboard,
+    getAdminAnalytics,
+   getAdminOverview,
+   updateAdminOrderStatus
+
 } from "../controllers/ordersController.js";
 
 const router = express.Router();
@@ -26,7 +36,29 @@ router.get(
     getOrders
 );
 
+router.get(
+    "/admin/overview",
+    authMiddleware,
+    roleMiddleware("admin"),
+    getAdminOverview
+);
 
+
+
+router.get(
+    "/admin/analytics",
+    authMiddleware,
+    roleMiddleware("admin"),
+    getAdminAnalytics
+);
+
+
+router.get(
+    "/seller/analytics",
+    authMiddleware,
+    roleMiddleware("seller", "admin"),
+    getSellerAnalytics
+);
 // Get my orders
 // Authenticated users
 router.get(
@@ -35,6 +67,35 @@ router.get(
     roleMiddleware("user", "seller", "admin"),
     getMyOrders
 );
+
+router.get(
+    "/admin/dashboard",
+    authMiddleware,
+    roleMiddleware("admin"),
+    getAdminDashboard
+);
+
+
+
+router.get(
+    "/seller",
+    authMiddleware,
+    roleMiddleware("seller", "admin"),
+    getSellerOrders
+);
+router.get(
+    "/seller/dashboard",
+    authMiddleware,
+    roleMiddleware("seller", "admin"),
+    getSellerDashboard
+);
+router.get(
+    "/seller/:id",
+    authMiddleware,
+    roleMiddleware("seller", "admin"),
+    getSellerOrder
+);
+
 
 
 // Get one order
@@ -54,6 +115,21 @@ router.post(
     "/",
     authMiddleware,
     createOrder
+);
+
+router.put(
+    "/admin/:id/status",
+    authMiddleware,
+    roleMiddleware("admin"),
+    updateAdminOrderStatus
+);
+
+
+router.put(
+    "/seller/:id/status",
+    authMiddleware,
+    roleMiddleware("seller", "admin"),
+    updateSellerOrderStatus
 );
 
 

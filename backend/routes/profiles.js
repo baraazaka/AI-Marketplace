@@ -11,7 +11,10 @@ import {
     createProfile,
     updateProfile,
     deleteProfile,
-    getMyProfile
+    getMyProfile,
+    getAllUsers,
+    updateUserRole,
+    deleteUser
 } from "../controllers/profilesController.js";
 
 const router = express.Router();
@@ -23,6 +26,12 @@ router.get(
     authMiddleware,
     roleMiddleware("admin"),
     getProfiles
+);
+router.get(
+    "/",
+    authMiddleware,
+    roleMiddleware("admin"),
+    getAllUsers
 );
 router.get(
     "/me",
@@ -46,6 +55,12 @@ router.post(
     authMiddleware,
     createProfile
 );
+router.put(
+    "/:id/role",
+    authMiddleware,
+    roleMiddleware("admin"),
+    updateUserRole
+);
 
 // Update profile
 // Owner or Admin
@@ -56,7 +71,12 @@ router.put(
     profileOwnershipMiddleware,
     updateProfile
 );
-
+router.delete(
+    "/:id",
+    authMiddleware,
+    roleMiddleware("admin"),
+    deleteUser
+);  
 // Delete profile
 // Owner or Admin
 router.delete(
